@@ -1,0 +1,9 @@
+// 🔹 Retourner un film
+apiRouter.post('/return', verifyToken, (req, res) => {
+  const { filmId } = req.body;
+  db.run('UPDATE rentals SET return_date = datetime("now") WHERE user_id = ? AND film_id = ? AND return_date IS NULL', [req.user.id, filmId], function(err) {
+    if (err) return res.status(500).json({ message: 'Erreur retour film.' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Aucune location active trouvée.' });
+    res.json({ message: 'Film retourné avec succès.' });
+  });
+});
