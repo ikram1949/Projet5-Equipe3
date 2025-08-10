@@ -1,0 +1,22 @@
+// 🔹 Louer un film
+apiRouter.post('/rent', verifyToken, (req, res) => {
+  const { filmId } = req.body;
+  if (!filmId) return res.status(400).json({ message: 'ID du film requis.' });
+
+  db.get('SELECT COUNT(*) AS count FROM rentals WHERE user_id = ? AND return_date IS NULL', [req.user.id], (err, result) => {
+    if (err) return res.status(500).json({ message: 'Erreur serveur.' });
+
+    if (result.count >= 5) return res.status(400).json({ message: 'Maximum 5 films loués.' });
+
+    db.get('SELECT * FROM rentals WHERE user_id = ? AND film_id = ? AND return_date IS NULL', [req.user.id, filmId], (err, row) => {
+      if (err) return res.status(500).json({ message: 'Erreur vérification location.' });
+
+      if (row) return res.status(400).json({ message: 'Film déjà loué.' });
+
+      db.run('INSERT INTO rentals (user_id, film_id, rental_date) VALUES (?, ?, datetime("now"))', [req.user.id, filmId], err => {
+        if (err) return res.status(500).json({ message: 'Erreur location film.' });
+        res.json({ message: 'Film loué avec succès.' });
+      });
+    });
+  });
+});

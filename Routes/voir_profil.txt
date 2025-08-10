@@ -1,0 +1,8 @@
+// 🔹 Voir son profil
+apiRouter.get('/profile', verifyToken, (req, res) => {
+  db.get('SELECT name, email, profile_picture FROM users WHERE id = ?', [req.user.id], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Erreur serveur.' });
+    if (!row) return res.status(404).json({ message: 'Utilisateur introuvable.' });
+    res.json(row);
+  });
+});
