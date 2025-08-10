@@ -1,8 +1,0 @@
-// 🔹 Upload image profil
-apiRouter.post('/upload-profile-picture', verifyToken, upload.single('profilePicture'), (req, res) => {
-  const imagePath = `/uploads/${req.file.filename}`;
-  db.run('UPDATE users SET profile_picture = ? WHERE id = ?', [imagePath, req.user.id], err => {
-    if (err) return res.status(500).json({ message: 'Erreur upload photo.' });
-    res.json({ message: 'Photo de profil mise à jour.', path: imagePath });
-  });
-});
