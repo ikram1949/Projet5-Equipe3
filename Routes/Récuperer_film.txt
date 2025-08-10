@@ -1,0 +1,7 @@
+// 🔹 Récupérer tous les films
+apiRouter.get('/films', (req, res) => {
+  db.all('SELECT * FROM films ORDER BY popularity DESC LIMIT 20', (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Erreur récupération films.' });
+    res.json(rows);
+  });
+});
